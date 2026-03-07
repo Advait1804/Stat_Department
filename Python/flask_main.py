@@ -1,6 +1,5 @@
 from flask import Flask, jsonify,request
 from flask_cors import CORS
-import os
 from attack_json import build_attack_json
 from data_cleaning import clean_table, standardize_columns
 from database_connectivity import connect_db, fetch_tables
@@ -163,5 +162,5 @@ def get_leaderboard_season():
     return jsonify(data)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+   app.run(debug=True)
+
