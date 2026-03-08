@@ -3,9 +3,9 @@
  * when you switch from development to a real server.
  */
 const CONFIG = {
-    MODE: 'DEV', 
+    MODE: 'PROD', 
     LOCAL_PATH: 'match_wise.json',
-    API_URL: 'https://api.khokhostats.com/v1/matches',
+    API_URL: 'http://127.0.0.1:5000/match-wise',
     PAGE_SIZE: 20 
 };
 
