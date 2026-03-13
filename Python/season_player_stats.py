@@ -1,5 +1,3 @@
-import pandas as pd
-
 def season_players_json(dfs):
     # Fetch required dataframes
     pms = dfs.get("player_season_stat")
@@ -30,7 +28,7 @@ def season_players_json(dfs):
         for _, row in team.iterrows()
     }
 
-    result = []
+    result = {}
 
     
     # Loop season-wise
@@ -51,7 +49,7 @@ def season_players_json(dfs):
 
             # Extract attack & defense stats (handle NULL safely)
             attack = int(row["total_attack_points"] or 0)
-            defense = int(row["total_defense_points"] or 0)
+            defense = int(row["total_defence_points"] or 0)
 
             # Get player info from lookup map
             player_info = player_map.get(player_id, {})
@@ -98,9 +96,6 @@ def season_players_json(dfs):
             })
 
         # Append season-wise data
-        result.append({
-            "season_id": int(season_id),
-            "players": players_list
-        })
+        result["players"]=players_list
 
     return result
