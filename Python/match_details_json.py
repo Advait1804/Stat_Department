@@ -61,15 +61,18 @@ def build_match_details_json(dfs):
         else:
             winner_team_name = team_name_map.get(winning_team_id, "Unknown")
         
+        
+        # Converting match id 
+        match_code = f"M{m_id:02d}"
+        
         # Convert to names
         detail_list.append({
-            "Match_id": m_id,
+            "id": match_code,
             "name": f"{home_team_name} vs {away_team_name}",
-            "Winner": winner_team_name,
+            "winner": winner_team_name,
             "bestAttacker": player_name_map.get(best_attacker_id, "Unknown"),
             "bestDefender": player_name_map.get(best_defender_id, "Unknown"),
             "bestAllrounder": player_name_map.get(best_all_rounder_id, "Unknown")
         })
 
     return {"matches": detail_list}
-
