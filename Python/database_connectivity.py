@@ -1,13 +1,11 @@
 import mysql.connector
-import os
 import pandas as pd
 
-DB_HOST = os.environ.get("MYSQLHOST")
-DB_USER = os.environ.get("MYSQLUSER")
-DB_PASSWORD = os.environ.get("MYSQLPASSWORD")
-DB_NAME = os.environ.get("MYSQLDATABASE")
-Port = int(os.environ.get("MYSQLPORT", 3306))
-OUTPUT_DIR = "outputs"
+DB_HOST = "localhost"
+DB_USER = "root"
+DB_PASSWORD = "Advait@18"
+DB_NAME = "Kho_Kho_DB"
+
 
 EXPECTED_TABLES = [
     "Team",
@@ -33,7 +31,7 @@ def connect_db():
         user=DB_USER,
         password=DB_PASSWORD,
         database=DB_NAME,
-        port=Port
+        
     )
 def fetch_tables(conn):
     dfs = {}
