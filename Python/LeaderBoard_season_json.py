@@ -1,57 +1,68 @@
-def LeaderBoard(dfs):
+def LeaderBoard_season(dfs):
     pms = dfs.get("player_season_stat")
     player = dfs.get("player")
+
+    if pms is None or player is None:
+        return []
+
     result = []
-    if pms is None:
-        return result
+
     player_name_map = {
         row.player_id: row.player_name
         for _, row in player.iterrows()
     }
-    max_attack = -1
-    max_defence = -1
-    max_all_rounder = -1
-    attack_player_id = -1
-    defence_player_id = -1
-    all_rounder_player_id = -1
-    for _, pm in pms.iterrows():
-        a_point = pm.get("total_attack_points", 0)
-        d_point = pm.get("total_defense_points", 0)
-        s_id=int(pm.get("season_id"))
-        if a_point > max_attack:
-            max_attack = a_point
-            attack_player_id = pm.get("player_id")
-        if d_point > max_defence:
-            max_defence = d_point
-            defence_player_id = pm.get("player_id")
-        all_score = (a_point * 30) + d_point
-        if all_score > max_all_rounder:
-            max_all_rounder = all_score
-            all_rounder_player_id = pm.get("player_id")
 
-    attack_player_name = player_name_map.get(attack_player_id, "Unknown")
-    defence_player_name = player_name_map.get(defence_player_id, "Unknown")
-    all_rounder_player_name = player_name_map.get(all_rounder_player_id, "Unknown")
+    player_role_map = {
+        row.player_id: row.role
+        for _, row in player.iterrows()
+    }
 
-    result.append({
-        "Season ID":s_id,
-        "Player name": attack_player_name,
-        "Award": "Best Attacker",
-        "Attack Points": int(max_attack)
-    })
+    pms = pms.copy()
+    pms["role"] = pms["player_id"].map(player_role_map)
+    pms["total_attack_points"] = pms["total_attack_points"].fillna(0)
+    pms["total_defense_points"] = pms["total_defense_points"].fillna(0)
 
-    result.append({
-        "Season ID":s_id,
-        "Player name": defence_player_name,
-        "Award": "Best Defender",
-        "Defence Points": int(max_defence)
-    })
+    for season_id, season_df in pms.groupby("season_id"):
 
-    result.append({
-        "Season ID":s_id,
-        "Player name": all_rounder_player_name,
-        "Award": "Best All-Rounder",
-        "All Rounder Points": int(max_all_rounder)
-    })
+        attackers = season_df[season_df["role"] == "Attacker"]
+        defenders = season_df[season_df["role"] == "Defender"]
+
+        # Best Attacker
+        if not attackers.empty:
+            idx = attackers["total_attack_points"].idxmax()
+            row = attackers.loc[idx]
+            result.append({
+                "Season ID": int(season_id),
+                "Player name": player_name_map.get(row["player_id"], "Unknown"),
+                "Award": "Best Attacker",
+                "Attack Points": int(row["total_attack_points"])
+            })
+
+        # Best Defender
+        if not defenders.empty:
+            idx = defenders["total_defense_points"].idxmax()
+            row = defenders.loc[idx]
+            result.append({
+                "Season ID": int(season_id),
+                "Player name": player_name_map.get(row["player_id"], "Unknown"),
+                "Award": "Best Defender",
+                "Defence Points": int(row["total_defense_points"])
+            })
+
+        # Best All-Rounder (no role restriction)
+        idx = (
+            (season_df["total_attack_points"] * 30) +
+            season_df["total_defense_points"]
+        ).idxmax()
+
+        row = season_df.loc[idx]
+        total_score = (row["total_attack_points"] * 30) + row["total_defense_points"]
+
+        result.append({
+            "Season ID": int(season_id),
+            "Player name": player_name_map.get(row["player_id"], "Unknown"),
+            "Award": "Best All-Rounder",
+            "All Rounder Points": int(total_score)
+        })
 
     return result
