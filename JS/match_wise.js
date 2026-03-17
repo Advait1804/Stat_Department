@@ -53,9 +53,8 @@ async function getMatchesFromServer(filters, page) {
         const params = new URLSearchParams({
             ...filters,
             page: page,
-            limit: CONFIG.PAGE_SIZE
+            limit: isInitialLoad ? 1000 : CONFIG.PAGE_SIZE
         });
-
         const response = await fetch(`${CONFIG.API_URL}?${params}`);
         return await response.json();
     }
@@ -211,10 +210,14 @@ function renderPagination(total, page, limit) {
 async function updateView(isNewSearch = true) {
 
     const query = document.getElementById("searchInput").value;
-    const season = document.getElementById("filterSeason").value;
-    const year = document.getElementById("filterYear").value;
-    const tournament = document.getElementById("filterTournament").value;
+    const seasonSelect = document.getElementById("filterSeason");
+    const yearSelect = document.getElementById("filterYear");
+    const tournamentSelect = document.getElementById("filterTournament");
 
+    const season = seasonSelect.options[seasonSelect.selectedIndex].value;
+    const year = yearSelect.options[yearSelect.selectedIndex].value;
+    const tournament = tournamentSelect.options[tournamentSelect.selectedIndex].value;
+    
     if (isNewSearch) currentPage = 1;
 
     document.getElementById("loadingSpinner")
@@ -226,6 +229,11 @@ async function updateView(isNewSearch = true) {
             { query, season, year, tournament },
             currentPage
         );
+
+        if (isInitialLoad && data.matches.length > 0) {
+            populateFilters(data.matches);
+            isInitialLoad = false;
+        }
 
         renderMatchUI(data);
 
@@ -271,7 +279,7 @@ document.getElementById("resetFilters")
 
     document.getElementById("searchInput").value = "";
 
-    document.getElementById("filterSeason").selectedIndex = 0;
+    document.getElementById("filterSeason").selectedIndex = 1;
     document.getElementById("filterYear").selectedIndex = 0;
     document.getElementById("filterTournament").selectedIndex = 0;
 
