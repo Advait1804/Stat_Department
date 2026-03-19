@@ -17,7 +17,7 @@ async function initialize() {
 
     // 2. Fetch Points Table Data
     try {
-        const response = await fetch("pointstable.json");
+        const response = await fetch("http://127.0.0.1:5000/point-table");
         leagueData = await response.json();
 
         setupSeasonSelector(leagueData.seasons);
