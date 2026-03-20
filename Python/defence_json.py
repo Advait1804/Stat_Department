@@ -1,56 +1,61 @@
-
-def build_defence_json(dfs,filters=None):
+def build_defence_json(dfs, filters=None):
 
     matches = dfs.get("match_details")
     teams = dfs.get("team")
-    seasons=dfs.get("season")
+    tournaments = dfs.get("tournament")
     defence = dfs.get("team_defence")
 
     defence_dict = {}
 
     if matches is None or defence is None:
         return defence_dict
-    
-    if filters:
 
-        if filters.get("tournament_id") is not None:
-            matches = matches[
-                matches["season_id"].isin(
-                    seasons.loc[
-                        seasons["tournament_id"] == filters["tournament_id"],
-                        "season_id"
-                    ]
-                )
-            ]
-
-        if filters.get("season_id") is not None:
-            matches = matches[
-                matches["season_id"] == filters["season_id"]
-            ]
-
-        if filters.get("match_id") is not None:
-            matches = matches[
-                matches["match_id"] == filters["match_id"]
-            ]
-
-        if filters.get("team_id") is not None:
-            matches = matches[
-                (matches["home_team"] == filters["team_id"]) |
-                (matches["away_team"] == filters["team_id"])
-            ]
-
-
-    defence = defence[
-        defence["match_id"].isin(matches["match_id"])]
-
+    # Mappings
     team_name_map = {
         row.team_id: row.team_name
         for _, row in teams.iterrows()
     } if teams is not None else {}
 
+    tournament_name_map = {
+        row.tournament_id: row.tournament_name
+        for _, row in tournaments.iterrows()
+    } if tournaments is not None else {}
+
+    # Filters
+    if filters:
+
+    # Tournament filter 
+        if filters.get("tournament") and filters["tournament"] != "all":
+            matches = matches[
+                matches["tournament_id"].isin([
+                    tid for tid, tname in tournament_name_map.items()
+                    if tname == filters["tournament"]
+                ])
+            ]
+
+        # Match filter
+        if filters.get("match"):
+            matches = matches[matches["match_name"] == filters["match"]]
+    # Filter defence only once
+    defence = defence[
+        defence["match_id"].isin(matches["match_id"])
+    ]
+
+    # Loop through matches
     for _, m in matches.iterrows():
 
         m_id = int(m.get("match_id"))
+        t_id = m.get("tournament_id")
+        match_name = m.get("match_name")
+
+        tournament_name = tournament_name_map.get(
+            t_id, f"Tournament_{t_id}"
+        )
+
+        # Create tournament level
+        if tournament_name not in defence_dict:
+            defence_dict[tournament_name] = {}
+
         match_defence = defence[defence["match_id"] == m_id]
 
         match_structure = {
@@ -60,10 +65,12 @@ def build_defence_json(dfs,filters=None):
             }
         }
 
+        # Loop defence rows
         for _, d in match_defence.iterrows():
 
             inning = int(d.get("inning_no"))
-            
+            inning_key = f"inning{inning}"
+
             team_id = int(d.get("team_id"))
             team_name = team_name_map.get(team_id, "Unknown")
 
@@ -74,14 +81,12 @@ def build_defence_json(dfs,filters=None):
                 "duration": float(d.get("duration"))
             }
 
-            inning_key = f"inning{inning}"
-
             if team_name not in match_structure["defence"][inning_key]:
                 match_structure["defence"][inning_key][team_name] = []
 
             match_structure["defence"][inning_key][team_name].append(batch_data)
-        match_code = f"M{m_id:02d}"
-        defence_dict[match_code] = match_structure
+
+        # Store under tournament → match
+        defence_dict[tournament_name][match_name] = match_structure
 
     return defence_dict
-
