@@ -30,7 +30,6 @@ CREATE TABLE Player (
     player_id INT PRIMARY KEY AUTO_INCREMENT,
     team_id INT NOT NULL,
     player_name VARCHAR(50) NOT NULL,
-    player_age INT CHECK (player_age > 0),
     role VARCHAR(20),
         CHECK (role IN ('Attacker','Defender','All-Rounder','Unknown')),
 
@@ -46,38 +45,38 @@ CREATE TABLE Player (
         REFERENCES Team(team_id)
 );
 
-INSERT INTO Player (player_id, team_id, player_name, player_age, role,jersey_no)
+INSERT INTO Player (player_id, team_id, player_name, role,jersey_no)
 VALUES 
-(1, 1, 'aayush yadav', 22, 'Defender',1),
-(2, 1, 'dhaygude atharva', 16, 'All-Rounder',2),
-(3, 1, 'varad pol', 14, 'Attacker',3),
-(4, 1, 'vaibhav jadhav', 16, 'Attacker',4),
-(5, 1, 'aayush panghare', 21, 'All-Rounder',5),
-(6, 1, 'swaraj ghadhave', 15, 'Attacker',6),
-(7, 1, 'pratik aadhav', 14, 'Defender',7),
-(8, 1, 'raj pawar', 16, 'Attacker',8),
-(9, 1, 'swaraj uttekar', 16, 'All-Rounder',9),
-(10, 1, 'mayureshwar gosavi', 14, 'Defender',10),
-(11, 1, 'vighnesh girme', 16, 'Attacker',11),
-(12, 1, 'soham hipparkar', 16, 'All-Rounder',12),
-(13, 1, 'soham bhamare', 15, 'Attacker',13),
-(14, 1, 'Tej Shinde', 14, 'Attacker',14),
-(15, 1, 'Sarthak Mahadik', 15, 'All-Rounder',15),
-(16, 2, 'kartavya gandekr', 14, 'Defender',1),
-(17, 2, 'soham deshmukh', 16, 'Attacker',2),
-(18, 2, 'atul parde', 16, 'All-Rounder',3),
-(19, 2, 'shreeyash maharugade', 15, 'Attacker',4),
-(20, 2, 'om wagh', 14, 'Defender',5),
-(21, 2, 'sangam thakur', 14, 'Attacker',6),
-(22, 2, 'krushna mahanvar', 16, 'All-Rounder',7),
-(23, 2, 'pranav mane', 15, 'Defender',8),
-(24, 2, 'shreeraj tangade', 14, 'Defender',9),
-(25, 2, 'satyam sakat', 16, 'Attacker',10),
-(26, 2, 'tanmay nigudkar', 16, 'All-Rounder',11),
-(27, 2, 'umesh dongare', 15, 'Attacker',12),
-(28, 2, 'pallav sarade', 14, 'Defender',13),
-(29, 2, 'arjun gorade', 16, 'Attacker',14),
-(30, 2, 'vedant gaikwad', 16, 'All-Rounder',15);
+(1, 1, 'aayush yadav', 'Defender',1),
+(2, 1, 'dhaygude atharva', 'All-Rounder',2),
+(3, 1, 'varad pol', 'Attacker',3),
+(4, 1, 'vaibhav jadhav', 'Attacker',4),
+(5, 1, 'aayush panghare', 'All-Rounder',5),
+(6, 1, 'swaraj ghadhave', 'Attacker',6),
+(7, 1, 'pratik aadhav', 'Defender',7),
+(8, 1, 'raj pawar', 'Attacker',8),
+(9, 1, 'swaraj uttekar', 'All-Rounder',9),
+(10, 1, 'mayureshwar gosavi', 'Defender',10),
+(11, 1, 'vighnesh girme', 'Attacker',11),
+(12, 1, 'soham hipparkar', 'All-Rounder',12),
+(13, 1, 'soham bhamare', 'Attacker',13),
+(14, 1, 'Tej Shinde', 'Attacker',14),
+(15, 1, 'Sarthak Mahadik', 'All-Rounder',15),
+(16, 2, 'kartavya gandekr', 'Defender',1),
+(17, 2, 'soham deshmukh', 'Attacker',2),
+(18, 2, 'atul parde', 'All-Rounder',3),
+(19, 2, 'shreeyash maharugade', 'Attacker',4),
+(20, 2, 'om wagh', 'Defender',5),
+(21, 2, 'sangam thakur', 'Attacker',6),
+(22, 2, 'krushna mahanvar', 'All-Rounder',7),
+(23, 2, 'pranav mane', 'Defender',8),
+(24, 2, 'shreeraj tangade', 'Defender',9),
+(25, 2, 'satyam sakat', 'Attacker',10),
+(26, 2, 'tanmay nigudkar', 'All-Rounder',11),
+(27, 2, 'umesh dongare', 'Attacker',12),
+(28, 2, 'pallav sarade', 'Defender',13),
+(29, 2, 'arjun gorade', 'Attacker',14),
+(30, 2, 'vedant gaikwad', 'All-Rounder',15);
 
 CREATE TABLE Team(
     team_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -104,7 +103,7 @@ CREATE TABLE Match_details(
     match_id INT PRIMARY KEY,
 	match_name VARCHAR(20),
     tournament_id INT,
-    venue VARCHAR(30) NOT NULL,
+    venue VARCHAR(100) NOT NULL,
     home_team INT NOT NULL,
     away_team INT NOT NULL,
     match_date DATE NOT NULL,
@@ -381,8 +380,8 @@ VALUES
 
 CREATE TABLE Tournament(
     tournament_id INT PRIMARY KEY AUTO_INCREMENT,
-    tournament_name VARCHAR(30) NOT NULL,
-    tournament_type VARCHAR(30)
+    tournament_name VARCHAR(100) NOT NULL,
+    tournament_type VARCHAR(50)
         CHECK (tournament_type IN ('All to all','Knockout','Group + Knockout','Unknown')),
     tournament_year INT
 );
